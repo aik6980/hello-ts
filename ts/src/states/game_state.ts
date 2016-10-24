@@ -1,9 +1,11 @@
 module State{
     export class Game_state extends Phaser.State{
 
-        unit = 24;
+        unit = 12;
         bmd_unit_white : Phaser.BitmapData;
+        
         level : Array<string>;
+        starty = 50;
 
         cursors : Phaser.CursorKeys;
 
@@ -34,13 +36,13 @@ module State{
             this.game.stage.backgroundColor = '#3598db';
 
             this.level = [
-                'xxxxxxxxxx',
-                'x    !   x',
-                'x        x',
-                'x s   o  x',
-                'x        x',
-                '!   o!x  x',
-                'xxxxxxx!!x',
+                'xxxxxxxxxxxxxxxxxxxx',
+                'x        !         x',
+                'x                  x',
+                'x s      o      o  x',
+                'x                  x',
+                '!    o ! x         x',
+                'xxxxxxxxxx!!!xxx!xxx',
             ];
 
             // create level
@@ -52,7 +54,7 @@ module State{
             obj = new Objects.Player(this.game, -this.unit, -this.unit);
             this.game.add.existing(obj);
             this.game.physics.enable(obj, Phaser.Physics.ARCADE);
-            obj.body.gravity.y = 600;
+            obj.body.gravity.y = 300;
             this.player = obj;
             
             for(var i=0; i<this.level.length; ++i){
@@ -60,25 +62,25 @@ module State{
 
                     var obj = null;
                     if(this.level[i][j] == 's'){
-                        this.spawn_point = [5+this.unit*j, 5+this.unit*i];
+                        this.spawn_point = [5+this.unit*j, this.starty+this.unit*i];
                     }
 
                     if(this.level[i][j] == 'x'){
-                        obj = new Objects.Wall(this.game, 5+this.unit*j, 5+this.unit*i);
+                        obj = new Objects.Wall(this.game, 5+this.unit*j, this.starty+this.unit*i);
                         this.walls.add(obj);
                         this.game.physics.enable(obj, Phaser.Physics.ARCADE);
                         obj.body.immovable = true;
                     }
 
                     if(this.level[i][j] == 'o'){
-                        obj = new Objects.Coin(this.game, 5+this.unit*j, 5+this.unit*i);
+                        obj = new Objects.Coin(this.game, 5+this.unit*j, this.starty+this.unit*i);
                         this.coins.add(obj);
                         this.game.physics.enable(obj, Phaser.Physics.ARCADE);
                         //obj.body.immovable = true;
                     }
 
                     if(this.level[i][j] == '!'){
-                        obj = new Objects.Enemy(this.game, 5+this.unit*j, 5+this.unit*i);
+                        obj = new Objects.Enemy(this.game, 5+this.unit*j, this.starty+this.unit*i);
                         this.enemies.add(obj);
                         this.game.physics.enable(obj, Phaser.Physics.ARCADE);
                     }
@@ -95,16 +97,16 @@ module State{
 
             // handle input
             if (this.cursors.left.isDown) 
-                this.player.body.velocity.x = -200;
+                this.player.body.velocity.x = -100;
             else if (this.cursors.right.isDown) 
-                this.player.body.velocity.x = 200;
+                this.player.body.velocity.x = 100;
             else 
                 this.player.body.velocity.x = 0;
 
             // Make the player jump if he is touching the ground
             // this.player.body.touching => this flag is reset every frames
             if (this.cursors.up.isDown && this.player.body.touching.down) 
-                this.player.body.velocity.y = -250;
+                this.player.body.velocity.y = -125;
         }
 
         spawn_player(){

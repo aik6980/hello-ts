@@ -14,17 +14,26 @@ var options = {
 }
 
 var server = require('http').createServer(app);
-app.use('/peerjs', ExpressPeerServer(server, options));
+var peerServer = ExpressPeerServer(server, options);
+// '/api' the main path to Peer Server, we also can use this to access Websocket Server
+app.use('/api', peerServer);
 // set server to serve static files here
 app.use(Express.static(__dirname + '/public'));
 
 // process.env.PORT for Heroku
 server.listen(process.env.PORT || 9000);
 
-server.on('connection', function(id){
-    console.log('someone connected' + id);
+peerServer.on('connection', function(id){
+    console.log('someone connected: ' + id);
 });
 
-server.on('disconnect', function(id){
-    console.log('someone disconnected' + id);
+peerServer.on('disconnect', function(id){
+    console.log('someone disconnected: ' + id);
+});
+
+server.on('connection', function(ws){
+    console.log('socket');
+    ws.on('message', function(msg){
+        console.log(msg);
+    });
 });
